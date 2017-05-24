@@ -1,5 +1,7 @@
 /*
  * Created by briank on 5/19/17.
+ *
+ * Implements a client for connecting to our PyHouse Mqtt Broker.
  */
 
 package org.pyhouse.pyhouse_android.application;
@@ -41,12 +43,15 @@ public class MqttClient extends AppCompatActivity {
     }
 
     /**
-     * The Mqtt protocol connect packet.
+     * The causes the connect action
      */
     public void MqttConnect() {
         Log.w(TAG, "Enter MqttConnect");
         mOptions = new MqttConnectOptions();
-        mClient = new MqttAndroidClient(mContext, mMqttBrokerAddress, mMqttClientId);
+        mClient = new MqttAndroidClient(
+                mContext,
+                mMqttBrokerAddress,
+                mMqttClientId);
         mOptions.setWill(lwtTopic, payload , 0, false);
         // mOptions.setUserName("USERNAME");
         // mOptions.setPassword("PASSWORD".toCharArray());

@@ -22,7 +22,7 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import org.pyhouse.pyhouse_android.R;
-import org.pyhouse.pyhouse_android.internal.Connections;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
 
 import java.util.Map;
 
@@ -81,18 +81,18 @@ public class HelpFragment extends Fragment {
         enableLoggingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Map<String, Connection> connections = Connections.getInstance(rootView.getContext())
+                Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(rootView.getContext())
                         .getConnections();
                 if (!connections.isEmpty()) {
-                    Map.Entry<String, Connection> entry = connections.entrySet().iterator().next();
-                    Connection connection = entry.getValue();
-                    connection.getClient().setTraceEnabled(isChecked);
+                    Map.Entry<String, MqttConnection> entry = connections.entrySet().iterator().next();
+                    MqttConnection mqttConnection = entry.getValue();
+                    mqttConnection.getClient().setTraceEnabled(isChecked);
                     if (isChecked) {
-                        connection.getClient().setTraceCallback(new MqttTraceCallback());
+                        mqttConnection.getClient().setTraceCallback(new MqttTraceCallback());
                     }
                     Log.i(TAG, "Trace was set to: " + isChecked);
                 } else {
-                    Log.i(TAG, "No Connection available to enable / disable trace on.");
+                    Log.i(TAG, "No MqttConnection available to enable / disable trace on.");
                 }
             }
         });

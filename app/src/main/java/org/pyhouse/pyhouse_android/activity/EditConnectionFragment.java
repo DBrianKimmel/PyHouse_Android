@@ -23,8 +23,8 @@ import android.widget.Switch;
 
 import org.pyhouse.pyhouse_android.R;
 import org.pyhouse.pyhouse_android.application.MainActivity;
-import org.pyhouse.pyhouse_android.internal.Connections;
-import org.pyhouse.pyhouse_android.model.ConnectionModel;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
+import org.pyhouse.pyhouse_android.model.MqttConnectionModel;
 
 import java.util.Map;
 import java.util.Random;
@@ -47,7 +47,7 @@ public class EditConnectionFragment extends Fragment {
     private Spinner lwtQos;
     private Switch lwtRetain;
 
-    private ConnectionModel formModel;
+    private MqttConnectionModel formModel;
     private boolean newConnection = true;
 
     private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -91,22 +91,22 @@ public class EditConnectionFragment extends Fragment {
 
 
         if (this.getArguments() != null && this.getArguments().getString(ActivityConstants.CONNECTION_KEY) != null) {
-            /** This Form is referencing an existing connection. **/
+            /** This Form is referencing an existing mqttConnection. **/
             //this.getArguments().getString(ActivityConstants.CONNECTION_KEY)
-            Map<String, Connection> connections = Connections.getInstance(this.getActivity())
+            Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(this.getActivity())
                     .getConnections();
             String connectionKey = this.getArguments().getString(ActivityConstants.CONNECTION_KEY);
-            Connection connection = connections.get(connectionKey);
-            System.out.println("Editing an existing connection: " + connection.handle());
+            MqttConnection mqttConnection = connections.get(connectionKey);
+            System.out.println("Editing an existing mqttConnection: " + mqttConnection.handle());
             newConnection = false;
-            formModel = new ConnectionModel(connection);
+            formModel = new MqttConnectionModel(mqttConnection);
             System.out.println("Form Model: " + formModel.toString());
-            formModel.setClientHandle(connection.handle());
+            formModel.setClientHandle(mqttConnection.handle());
 
             populateFromConnectionModel(formModel);
 
         } else {
-            formModel = new ConnectionModel();
+            formModel = new MqttConnectionModel();
             populateFromConnectionModel(formModel);
 
         }
@@ -343,21 +343,21 @@ public class EditConnectionFragment extends Fragment {
     }
 
     @SuppressLint("SetTextI18n")
-    private void populateFromConnectionModel(ConnectionModel connectionModel) {
-        clientId.setText(connectionModel.getClientId());
-        serverHostname.setText(connectionModel.getServerHostName());
-        serverPort.setText(Integer.toString(connectionModel.getServerPort()));
-        cleanSession.setChecked(connectionModel.isCleanSession());
-        username.setText(connectionModel.getUsername());
-        password.setText(connectionModel.getPassword());
-        tlsServerKey.setText(connectionModel.getTlsServerKey());
-        tlsClientKey.setText(connectionModel.getTlsClientKey());
-        timeout.setText(Integer.toString(connectionModel.getTimeout()));
-        keepAlive.setText(Integer.toString(connectionModel.getKeepAlive()));
-        lwtTopic.setText(connectionModel.getLwtTopic());
-        lwtMessage.setText(connectionModel.getLwtMessage());
-        lwtQos.setSelection(connectionModel.getLwtQos());
-        lwtRetain.setChecked(connectionModel.isLwtRetain());
+    private void populateFromConnectionModel(MqttConnectionModel mqttConnectionModel) {
+        clientId.setText(mqttConnectionModel.getClientId());
+        serverHostname.setText(mqttConnectionModel.getServerHostName());
+        serverPort.setText(Integer.toString(mqttConnectionModel.getServerPort()));
+        cleanSession.setChecked(mqttConnectionModel.isCleanSession());
+        username.setText(mqttConnectionModel.getUsername());
+        password.setText(mqttConnectionModel.getPassword());
+        tlsServerKey.setText(mqttConnectionModel.getTlsServerKey());
+        tlsClientKey.setText(mqttConnectionModel.getTlsClientKey());
+        timeout.setText(Integer.toString(mqttConnectionModel.getTimeout()));
+        keepAlive.setText(Integer.toString(mqttConnectionModel.getKeepAlive()));
+        lwtTopic.setText(mqttConnectionModel.getLwtTopic());
+        lwtMessage.setText(mqttConnectionModel.getLwtMessage());
+        lwtQos.setSelection(mqttConnectionModel.getLwtQos());
+        lwtRetain.setChecked(mqttConnectionModel.isLwtRetain());
     }
 
     private void saveConnection() {

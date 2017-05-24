@@ -12,11 +12,11 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import org.pyhouse.pyhouse_android.R;
-import org.pyhouse.pyhouse_android.internal.IReceivedMessageListener;
+import org.pyhouse.pyhouse_android.internal.IMqttReceivedMessageListener;
 import org.pyhouse.pyhouse_android.internal.Persistence;
 import org.pyhouse.pyhouse_android.internal.PersistenceException;
-import org.pyhouse.pyhouse_android.model.ReceivedMessage;
-import org.pyhouse.pyhouse_android.model.Subscription;
+import org.pyhouse.pyhouse_android.model.MqttReceivedMessageData;
+import org.pyhouse.pyhouse_android.model.MqttSubscriptionModel;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -30,7 +30,7 @@ import java.util.Map;
 /**
  * Represents a {@link MqttAndroidClient} and the actions it has performed
  */
-public class Connection {
+public class MqttConnection {
 
     private static final String activityClass = "org.pyhouse.pyhouse_android.application.MainActivity";
     private String clientHandle = null;
@@ -40,7 +40,7 @@ public class Connection {
     private ConnectionStatus status = ConnectionStatus.NONE;
 
     /**
-     * Te history of the {@link MqttAndroidClient} represented by this <code>Connection</code> object
+     * Te history of the {@link MqttAndroidClient} represented by this <code>MqttConnection</code> object
      **/
     private ArrayList<String> history = null;
 
@@ -78,12 +78,12 @@ public class Connection {
     /**
      * The list of this connection's subscriptions
      **/
-    private final Map<String, Subscription> subscriptions = new HashMap<String, Subscription>();
-    private final ArrayList<ReceivedMessage> messageHistory = new ArrayList<ReceivedMessage>();
-    private final ArrayList<IReceivedMessageListener> receivedMessageListeners = new ArrayList<IReceivedMessageListener>();
+    private final Map<String, MqttSubscriptionModel> subscriptions = new HashMap<String, MqttSubscriptionModel>();
+    private final ArrayList<MqttReceivedMessageData> messageHistory = new ArrayList<MqttReceivedMessageData>();
+    private final ArrayList<IMqttReceivedMessageListener> receivedMessageListeners = new ArrayList<IMqttReceivedMessageListener>();
 
     /**
-     * Connections status for  a connection
+     * MqttConnectionCollection status for  a connection
      */
     public enum ConnectionStatus {
         CONNECTING,
@@ -103,9 +103,9 @@ public class Connection {
      * @param port          the port on the server which the client will attempt to connect to
      * @param context       the application context
      * @param tlsConnection true if the connection is secured by SSL
-     * @return a new instance of <code>Connection</code>
+     * @return a new instance of <code>MqttConnection</code>
      */
-    public static Connection createConnection(String clientHandle, String clientId, String host, int port, Context context, boolean tlsConnection) {
+    public static MqttConnection createConnection(String clientHandle, String clientId, String host, int port, Context context, boolean tlsConnection) {
         String uri;
         if (tlsConnection) {
             uri = "ssl://" + host + ":" + port;
@@ -113,7 +113,7 @@ public class Connection {
             uri = "tcp://" + host + ":" + port;
         }
         MqttAndroidClient client = new MqttAndroidClient(context, uri, clientId);
-        return new Connection(clientHandle, clientId, host, port, context, client, tlsConnection);
+        return new MqttConnection(clientHandle, clientId, host, port, context, client, tlsConnection);
     }
 
     public void updateConnection(String clientId, String host, int port, boolean tlsConnection) {
@@ -136,7 +136,7 @@ public class Connection {
      * Creates a connection object with the server information and the client
      * hand which is the reference used to pass the client around activities
      *
-     * @param clientHandle  The handle to this <code>Connection</code> object
+     * @param clientHandle  The handle to this <code>MqttConnection</code> object
      * @param clientId      The Id of the client
      * @param host          The server which the client is connecting to
      * @param port          The port on the server which the client will attempt to connect to
@@ -144,8 +144,14 @@ public class Connection {
      * @param client        The MqttAndroidClient which communicates with the service for this connection
      * @param tlsConnection true if the connection is secured by SSL
      */
-    private Connection(String clientHandle, String clientId, String host,
-                       int port, Context context, MqttAndroidClient client, boolean tlsConnection) {
+    private MqttConnection(
+            String clientHandle,
+            String clientId,
+            String host,
+            int port,
+            Context context,
+            MqttAndroidClient client,
+            boolean tlsConnection) {
         //generate the client handle from its hash code
         this.clientHandle = clientHandle;
         this.clientId = clientId;
@@ -253,11 +259,11 @@ public class Connection {
      */
     @Override
     public boolean equals(Object o) {
-        if (!(o instanceof Connection)) {
+        if (!(o instanceof MqttConnection)) {
             return false;
         }
 
-        Connection c = (Connection) o;
+        MqttConnection c = (MqttConnection) o;
 
         return clientHandle.equals(c.clientHandle);
 
@@ -367,19 +373,19 @@ public class Connection {
     }
 
 
-    public void addNewSubscription(Subscription subscription) throws MqttException {
-        if (!subscriptions.containsKey(subscription.getTopic())) {
+    public void addNewSubscription(MqttSubscriptionModel mqttSubscriptionModel) throws MqttException {
+        if (!subscriptions.containsKey(mqttSubscriptionModel.getTopic())) {
             try {
                 String[] actionArgs = new String[1];
-                actionArgs[0] = subscription.getTopic();
+                actionArgs[0] = mqttSubscriptionModel.getTopic();
                 final ActionListener callback = new ActionListener(this.context,
                         ActionListener.Action.SUBSCRIBE, this, actionArgs);
-                this.getClient().subscribe(subscription.getTopic(), subscription.getQos(), null, callback);
+                this.getClient().subscribe(mqttSubscriptionModel.getTopic(), mqttSubscriptionModel.getQos(), null, callback);
                 Persistence persistence = new Persistence(context);
 
-                long rowId = persistence.persistSubscription(subscription);
-                subscription.setPersistenceId(rowId);
-                subscriptions.put(subscription.getTopic(), subscription);
+                long rowId = persistence.persistSubscription(mqttSubscriptionModel);
+                mqttSubscriptionModel.setPersistenceId(rowId);
+                subscriptions.put(mqttSubscriptionModel.getTopic(), mqttSubscriptionModel);
             } catch (PersistenceException pe) {
                 throw new MqttException(pe);
             }
@@ -388,34 +394,34 @@ public class Connection {
     }
 
 
-    public void unsubscribe(Subscription subscription) throws MqttException {
-        if (subscriptions.containsKey(subscription.getTopic())) {
-            this.getClient().unsubscribe(subscription.getTopic());
-            subscriptions.remove(subscription.getTopic());
+    public void unsubscribe(MqttSubscriptionModel mqttSubscriptionModel) throws MqttException {
+        if (subscriptions.containsKey(mqttSubscriptionModel.getTopic())) {
+            this.getClient().unsubscribe(mqttSubscriptionModel.getTopic());
+            subscriptions.remove(mqttSubscriptionModel.getTopic());
             Persistence persistence = new Persistence(context);
-            persistence.deleteSubscription(subscription);
+            persistence.deleteSubscription(mqttSubscriptionModel);
         }
 
     }
 
-    public void setSubscriptions(ArrayList<Subscription> newSubs) {
-        for (Subscription sub : newSubs) {
+    public void setSubscriptions(ArrayList<MqttSubscriptionModel> newSubs) {
+        for (MqttSubscriptionModel sub : newSubs) {
             subscriptions.put(sub.getTopic(), sub);
         }
     }
 
-    public ArrayList<Subscription> getSubscriptions() {
-        ArrayList<Subscription> subs = new ArrayList<Subscription>();
+    public ArrayList<MqttSubscriptionModel> getSubscriptions() {
+        ArrayList<MqttSubscriptionModel> subs = new ArrayList<MqttSubscriptionModel>();
         subs.addAll(subscriptions.values());
         return subs;
     }
 
-    public void addReceivedMessageListner(IReceivedMessageListener listener) {
+    public void addReceivedMessageListner(IMqttReceivedMessageListener listener) {
         receivedMessageListeners.add(listener);
     }
 
     public void messageArrived(String topic, MqttMessage message) {
-        ReceivedMessage msg = new ReceivedMessage(topic, message);
+        MqttReceivedMessageData msg = new MqttReceivedMessageData(topic, message);
         messageHistory.add(0, msg);
         if (subscriptions.containsKey(topic)) {
             subscriptions.get(topic).setLastMessage(new String(message.getPayload()));
@@ -437,14 +443,14 @@ public class Connection {
             }
         }
 
-        for (IReceivedMessageListener listener : receivedMessageListeners) {
+        for (IMqttReceivedMessageListener listener : receivedMessageListeners) {
             listener.onMessageReceived(msg);
         }
 
 
     }
 
-    public ArrayList<ReceivedMessage> getMessages() {
+    public ArrayList<MqttReceivedMessageData> getMessages() {
         return messageHistory;
     }
 }

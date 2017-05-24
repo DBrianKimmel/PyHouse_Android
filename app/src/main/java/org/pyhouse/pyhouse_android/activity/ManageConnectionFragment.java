@@ -15,14 +15,14 @@ import android.widget.TextView;
 
 import org.pyhouse.pyhouse_android.R;
 import org.pyhouse.pyhouse_android.application.MainActivity;
-import org.pyhouse.pyhouse_android.internal.Connections;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
 
 import java.util.Map;
 
 
 public class ManageConnectionFragment extends Fragment {
-    private Connection connection;
-    private Map<String, Connection> connections;
+    private MqttConnection mqttConnection;
+    private Map<String, MqttConnection> connections;
     private String connectionKey;
 
 
@@ -33,10 +33,10 @@ public class ManageConnectionFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        connections = Connections.getInstance(this.getActivity())
+        connections = MqttConnectionCollection.getInstance(this.getActivity())
                 .getConnections();
         connectionKey = this.getArguments().getString(ActivityConstants.CONNECTION_KEY);
-        connection = connections.get(connectionKey);
+        mqttConnection = connections.get(connectionKey);
         setHasOptionsMenu(false);
 
     }
@@ -45,7 +45,7 @@ public class ManageConnectionFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_manage, container, false);
-        final String name = connection.getId() + "@" + connection.getHostName() + ":" + connection.getPort();
+        final String name = mqttConnection.getId() + "@" + mqttConnection.getHostName() + ":" + mqttConnection.getPort();
         TextView label = (TextView) rootView.findViewById(R.id.connection_id_text);
         label.setText(name);
 
@@ -53,14 +53,14 @@ public class ManageConnectionFragment extends Fragment {
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Deleting Connection: " + name + ".");
+                System.out.println("Deleting MqttConnection: " + name + ".");
                 connections.remove(connectionKey);
-                Connections.getInstance(getActivity()).removeConnection(connection);
+                MqttConnectionCollection.getInstance(getActivity()).removeConnection(mqttConnection);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.container_body, new HomeFragment());
                 fragmentTransaction.commit();
-                ((MainActivity) getActivity()).removeConnectionRow(connection);
+                ((MainActivity) getActivity()).removeConnectionRow(mqttConnection);
             }
         });
 
@@ -68,10 +68,10 @@ public class ManageConnectionFragment extends Fragment {
         editButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("Editing Connection: " + name + ".");
+                System.out.println("Editing MqttConnection: " + name + ".");
                 EditConnectionFragment editConnectionFragment = new EditConnectionFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString(ActivityConstants.CONNECTION_KEY, connection.handle());
+                bundle.putString(ActivityConstants.CONNECTION_KEY, mqttConnection.handle());
                 editConnectionFragment.setArguments(bundle);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

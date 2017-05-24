@@ -21,33 +21,33 @@ import android.widget.Switch;
 
 import org.pyhouse.pyhouse_android.R;
 import org.pyhouse.pyhouse_android.application.MainActivity;
-import org.pyhouse.pyhouse_android.internal.Connections;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
 
 import java.util.Map;
 
 
-public class PublishFragment extends Fragment {
+public class MqttPublishFragment extends Fragment {
 
-    private Connection connection;
+    private MqttConnection mqttConnection;
 
     private int selectedQos = 0;
     private boolean retainValue = false;
     private String topic = "/test";
     private String message = "Hello world";
 
-    public PublishFragment() {
+    public MqttPublishFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Map<String, Connection> connections = Connections.getInstance(this.getActivity())
+        Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(this.getActivity())
                 .getConnections();
-        connection = connections.get(this.getArguments().getString(ActivityConstants.CONNECTION_KEY));
+        mqttConnection = connections.get(this.getArguments().getString(ActivityConstants.CONNECTION_KEY));
 
         System.out.println("FRAGMENT CONNECTION: " + this.getArguments().getString(ActivityConstants.CONNECTION_KEY));
-        System.out.println("NAME:" + connection.getId());
+        System.out.println("NAME:" + mqttConnection.getId());
 
     }
 
@@ -122,7 +122,7 @@ public class PublishFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 System.out.println("Publising: [topic: " + topic + ", message: " + message + ", QoS: " + selectedQos + ", Retain: " + retainValue + "]");
-                ((MainActivity) getActivity()).publish(connection, topic, message, selectedQos, retainValue);
+                ((MainActivity) getActivity()).publish(mqttConnection, topic, message, selectedQos, retainValue);
             }
         });
 

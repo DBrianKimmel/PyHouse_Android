@@ -16,15 +16,15 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.android.service.MqttAndroidClient;
 
 import org.pyhouse.pyhouse_android.R;
-import org.pyhouse.pyhouse_android.internal.Connections;
-import org.pyhouse.pyhouse_android.model.Subscription;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
+import org.pyhouse.pyhouse_android.model.MqttSubscriptionModel;
 
 import java.util.ArrayList;
 
 
 /**
  * This Class handles receiving information from the
- * {@link MqttAndroidClient} and updating the {@link Connection} associated with
+ * {@link MqttAndroidClient} and updating the {@link MqttConnection} associated with
  * the action
  */
 public class ActionListener implements IMqttActionListener {
@@ -52,9 +52,9 @@ public class ActionListener implements IMqttActionListener {
      **/
     private final String[] additionalArgs;
 
-    private final Connection connection;
+    private final MqttConnection mqttConnection;
     /**
-     * Handle of the {@link Connection} this action was being executed on
+     * Handle of the {@link MqttConnection} this action was being executed on
      **/
     private final String clientHandle;
     /**
@@ -67,14 +67,14 @@ public class ActionListener implements IMqttActionListener {
      *
      * @param context        The application context
      * @param action         The action that is being performed
-     * @param connection     The connection
+     * @param mqttConnection     The mqttConnection
      * @param additionalArgs Used for as arguments for string formating
      */
-    public ActionListener(Context context, Action action, Connection connection, String... additionalArgs) {
+    public ActionListener(Context context, Action action, MqttConnection mqttConnection, String... additionalArgs) {
         this.context = context;
         this.action = action;
-        this.connection = connection;
-        this.clientHandle = connection.handle();
+        this.mqttConnection = mqttConnection;
+        this.clientHandle = mqttConnection.handle();
         this.additionalArgs = additionalArgs;
     }
 
@@ -103,12 +103,12 @@ public class ActionListener implements IMqttActionListener {
     }
 
     /**
-     * A publish action has been successfully completed, update connection
+     * A publish action has been successfully completed, update mqttConnection
      * object associated with the client this action belongs to, then notify the
      * user of success
      */
     private void publish() {
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
         @SuppressLint("StringFormatMatches") String actionTaken = context.getString(R.string.toast_pub_success,
                 (Object[]) additionalArgs);
         c.addAction(actionTaken);
@@ -117,12 +117,12 @@ public class ActionListener implements IMqttActionListener {
     }
 
     /**
-     * A addNewSubscription action has been successfully completed, update the connection
+     * A addNewSubscription action has been successfully completed, update the mqttConnection
      * object associated with the client this action belongs to and then notify
      * the user of success
      */
     private void subscribe() {
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
         String actionTaken = context.getString(R.string.toast_sub_success,
                 (Object[]) additionalArgs);
         c.addAction(actionTaken);
@@ -133,12 +133,12 @@ public class ActionListener implements IMqttActionListener {
 
     /**
      * A disconnection action has been successfully completed, update the
-     * connection object associated with the client this action belongs to and
+     * mqttConnection object associated with the client this action belongs to and
      * then notify the user of success.
      */
     private void disconnect() {
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
-        c.changeConnectionStatus(Connection.ConnectionStatus.DISCONNECTED);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
+        c.changeConnectionStatus(MqttConnection.ConnectionStatus.DISCONNECTED);
         String actionTaken = context.getString(R.string.toast_disconnected);
         c.addAction(actionTaken);
         Log.i(TAG, c.handle() + " disconnected.");
@@ -150,22 +150,22 @@ public class ActionListener implements IMqttActionListener {
     }
 
     /**
-     * A connection action has been successfully completed, update the
-     * connection object associated with the client this action belongs to and
+     * A mqttConnection action has been successfully completed, update the
+     * mqttConnection object associated with the client this action belongs to and
      * then notify the user of success.
      */
     private void connect() {
 
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
-        c.changeConnectionStatus(Connection.ConnectionStatus.CONNECTED);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
+        c.changeConnectionStatus(MqttConnection.ConnectionStatus.CONNECTED);
         c.addAction("Client Connected");
         Log.i(TAG, c.handle() + " connected.");
         try {
 
-            ArrayList<Subscription> subscriptions = connection.getSubscriptions();
-            for (Subscription sub : subscriptions) {
+            ArrayList<MqttSubscriptionModel> mqttSubscriptionModels = mqttConnection.getSubscriptions();
+            for (MqttSubscriptionModel sub : mqttSubscriptionModels) {
                 Log.i(TAG, "Auto-subscribing to: " + sub.getTopic() + "@ QoS: " + sub.getQos());
-                connection.getClient().subscribe(sub.getTopic(), sub.getQos());
+                mqttConnection.getClient().subscribe(sub.getTopic(), sub.getQos());
             }
         } catch (MqttException ex) {
             Log.e(TAG, "Failed to Auto-Subscribe: " + ex.getMessage());
@@ -203,7 +203,7 @@ public class ActionListener implements IMqttActionListener {
      * @param exception This argument is not used
      */
     private void publish(Throwable exception) {
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
         @SuppressLint("StringFormatMatches") String action = context.getString(R.string.toast_pub_failed,
                 (Object[]) additionalArgs);
         c.addAction(action);
@@ -217,7 +217,7 @@ public class ActionListener implements IMqttActionListener {
      * @param exception This argument is not used
      */
     private void subscribe(Throwable exception) {
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
         String action = context.getString(R.string.toast_sub_failed,
                 (Object[]) additionalArgs);
         c.addAction(action);
@@ -231,8 +231,8 @@ public class ActionListener implements IMqttActionListener {
      * @param exception This argument is not used
      */
     private void disconnect(Throwable exception) {
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
-        c.changeConnectionStatus(Connection.ConnectionStatus.DISCONNECTED);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
+        c.changeConnectionStatus(MqttConnection.ConnectionStatus.DISCONNECTED);
         c.addAction("Disconnect Failed - an error occured");
     }
 
@@ -242,8 +242,8 @@ public class ActionListener implements IMqttActionListener {
      * @param exception This argument is not used
      */
     private void connect(Throwable exception) {
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
-        c.changeConnectionStatus(Connection.ConnectionStatus.ERROR);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
+        c.changeConnectionStatus(MqttConnection.ConnectionStatus.ERROR);
         c.addAction("Client failed to connect");
         System.out.println("Client failed to connect");
     }

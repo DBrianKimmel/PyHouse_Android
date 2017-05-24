@@ -27,23 +27,23 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 import org.pyhouse.pyhouse_android.R;
 import org.pyhouse.pyhouse_android.components.SubscriptionListItemAdapter;
-import org.pyhouse.pyhouse_android.internal.Connections;
-import org.pyhouse.pyhouse_android.model.Subscription;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
+import org.pyhouse.pyhouse_android.model.MqttSubscriptionModel;
 
 import java.util.ArrayList;
 import java.util.Map;
 
 
-public class SubscriptionFragment extends Fragment {
+public class MqttSubscriptionFragment extends Fragment {
 
     private int temp_qos_value = 0;
     // --Commented out by Inspection (12/10/2016, 10:22):ListView subscriptionListView;
 
-    private ArrayList<Subscription> subscriptions;
+    private ArrayList<MqttSubscriptionModel> mqttSubscriptionModels;
 
-    private Connection connection;
+    private MqttConnection mqttConnection;
 
-    public SubscriptionFragment() {
+    public MqttSubscriptionFragment() {
         // Required empty public constructor
     }
 
@@ -52,10 +52,10 @@ public class SubscriptionFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle bundle = this.getArguments();
         String connectionHandle = bundle.getString(ActivityConstants.CONNECTION_KEY);
-        Map<String, Connection> connections = Connections.getInstance(this.getActivity())
+        Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(this.getActivity())
                 .getConnections();
-        connection = connections.get(connectionHandle);
-        subscriptions = connection.getSubscriptions();
+        mqttConnection = connections.get(connectionHandle);
+        mqttSubscriptionModels = mqttConnection.getSubscriptions();
 
     }
 
@@ -73,16 +73,16 @@ public class SubscriptionFragment extends Fragment {
         });
 
         ListView subscriptionListView = (ListView) rootView.findViewById(R.id.subscription_list_view);
-        SubscriptionListItemAdapter adapter = new SubscriptionListItemAdapter(this.getActivity(), subscriptions);
+        SubscriptionListItemAdapter adapter = new SubscriptionListItemAdapter(this.getActivity(), mqttSubscriptionModels);
 
         adapter.addOnUnsubscribeListner(new SubscriptionListItemAdapter.OnUnsubscribeListner() {
             @Override
-            public void onUnsubscribe(Subscription subscription) {
+            public void onUnsubscribe(MqttSubscriptionModel mqttSubscriptionModel) {
                 try {
-                    connection.unsubscribe(subscription);
-                    System.out.println("Unsubscribed from: " + subscription.toString());
+                    mqttConnection.unsubscribe(mqttSubscriptionModel);
+                    System.out.println("Unsubscribed from: " + mqttSubscriptionModel.toString());
                 } catch (MqttException ex) {
-                    System.out.println("Failed to unsubscribe from " + subscription.toString() + ". " + ex.getMessage());
+                    System.out.println("Failed to unsubscribe from " + mqttSubscriptionModel.toString() + ". " + ex.getMessage());
                 }
             }
         });
@@ -123,10 +123,10 @@ public class SubscriptionFragment extends Fragment {
             public void onClick(DialogInterface dialog, int id) {
                 String topic = topicText.getText().toString();
 
-                Subscription subscription = new Subscription(topic, temp_qos_value, connection.handle(), notifySwitch.isChecked());
-                subscriptions.add(subscription);
+                MqttSubscriptionModel mqttSubscriptionModel = new MqttSubscriptionModel(topic, temp_qos_value, mqttConnection.handle(), notifySwitch.isChecked());
+                mqttSubscriptionModels.add(mqttSubscriptionModel);
                 try {
-                    connection.addNewSubscription(subscription);
+                    mqttConnection.addNewSubscription(mqttSubscriptionModel);
 
                 } catch (MqttException ex) {
                     System.out.println("MqttException whilst subscribing: " + ex.getMessage());

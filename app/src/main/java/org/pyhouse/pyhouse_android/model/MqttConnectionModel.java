@@ -4,10 +4,10 @@
 
 package org.pyhouse.pyhouse_android.model;
 
-import org.pyhouse.pyhouse_android.activity.Connection;
+import org.pyhouse.pyhouse_android.activity.MqttConnection;
 
 
-public class ConnectionModel {
+public class MqttConnectionModel {
 
     private static final String CLIENT_HANDLE = "CLIENT_HANDLE";
     private static final String CLIENT_ID = "CLIENT_ID";
@@ -45,49 +45,46 @@ public class ConnectionModel {
     private int lwtQos = 0;
     private boolean lwtRetain =  false;
 
-    public ConnectionModel() {
+    public MqttConnectionModel() {
     }
 
 
 
-    /** Initialise the ConnectionModel with an existing connection **/
-    public ConnectionModel(Connection connection){
-        clientHandle = connection.handle();
-        clientId = connection.getId();
-        serverHostName = connection.getHostName();
-        serverPort = connection.getPort();
-        cleanSession = connection.getConnectionOptions().isCleanSession();
-
-        if(connection.getConnectionOptions().getUserName() == null){
+    /** Initialise the MqttConnectionModel with an existing mqttConnection **/
+    public MqttConnectionModel(MqttConnection mqttConnection) {
+        clientHandle = mqttConnection.handle();
+        clientId = mqttConnection.getId();
+        serverHostName = mqttConnection.getHostName();
+        serverPort = mqttConnection.getPort();
+        cleanSession = mqttConnection.getConnectionOptions().isCleanSession();
+        if(mqttConnection.getConnectionOptions().getUserName() == null){
             username = "";
         }else {
-            username = connection.getConnectionOptions().getUserName();
+            username = mqttConnection.getConnectionOptions().getUserName();
         }
-        if(connection.getConnectionOptions().getPassword() != null) {
-            password = new String(connection.getConnectionOptions().getPassword());
+        if(mqttConnection.getConnectionOptions().getPassword() != null) {
+            password = new String(mqttConnection.getConnectionOptions().getPassword());
         } else {
             password = "";
         }
         tlsServerKey = "--- TODO ---";
         tlsClientKey = "--- TODO ---";
-        timeout = connection.getConnectionOptions().getConnectionTimeout();
-        keepAlive = connection.getConnectionOptions().getKeepAliveInterval();
-
-        if(connection.getConnectionOptions().getWillDestination() == null){
+        timeout = mqttConnection.getConnectionOptions().getConnectionTimeout();
+        keepAlive = mqttConnection.getConnectionOptions().getKeepAliveInterval();
+        if(mqttConnection.getConnectionOptions().getWillDestination() == null){
             lwtTopic = "";
         } else {
-            lwtTopic = connection.getConnectionOptions().getWillDestination();
+            lwtTopic = mqttConnection.getConnectionOptions().getWillDestination();
         }
-        if(connection.getConnectionOptions().getWillMessage() != null) {
-            lwtMessage = new String(connection.getConnectionOptions().getWillMessage().getPayload());
-            lwtQos = connection.getConnectionOptions().getWillMessage().getQos();
-            lwtRetain = connection.getConnectionOptions().getWillMessage().isRetained();
+        if(mqttConnection.getConnectionOptions().getWillMessage() != null) {
+            lwtMessage = new String(mqttConnection.getConnectionOptions().getWillMessage().getPayload());
+            lwtQos = mqttConnection.getConnectionOptions().getWillMessage().getQos();
+            lwtRetain = mqttConnection.getConnectionOptions().getWillMessage().isRetained();
         } else {
             lwtMessage = "";
             lwtQos = 0;
             lwtRetain = false;
         }
-
     }
 
     public String getClientHandle() {
@@ -220,7 +217,7 @@ public class ConnectionModel {
 
     @Override
     public String toString() {
-        return "ConnectionModel{" +
+        return "MqttConnectionModel{" +
                 "clientHandle='" + clientHandle + '\'' +
                 ", clientId='" + clientId + '\'' +
                 ", serverHostName='" + serverHostName + '\'' +
@@ -245,7 +242,7 @@ public class ConnectionModel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        ConnectionModel that = (ConnectionModel) o;
+        MqttConnectionModel that = (MqttConnectionModel) o;
 
         if (serverPort != that.serverPort) return false;
         if (cleanSession != that.cleanSession) return false;

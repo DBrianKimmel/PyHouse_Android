@@ -14,9 +14,9 @@ import android.widget.ListView;
 
 import org.pyhouse.pyhouse_android.R;
 import org.pyhouse.pyhouse_android.components.MessageListItemAdapter;
-import org.pyhouse.pyhouse_android.internal.Connections;
-import org.pyhouse.pyhouse_android.internal.IReceivedMessageListener;
-import org.pyhouse.pyhouse_android.model.ReceivedMessage;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
+import org.pyhouse.pyhouse_android.internal.IMqttReceivedMessageListener;
+import org.pyhouse.pyhouse_android.model.MqttReceivedMessageData;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -27,7 +27,7 @@ public class HistoryFragment extends Fragment {
     private MessageListItemAdapter messageListAdapter;
 
 
-    private ArrayList<ReceivedMessage> messages;
+    private ArrayList<MqttReceivedMessageData> messages;
 
     public HistoryFragment() {
 
@@ -38,15 +38,15 @@ public class HistoryFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Map<String, Connection> connections = Connections.getInstance(this.getActivity())
+        Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(this.getActivity())
                 .getConnections();
-        Connection connection = connections.get(this.getArguments().getString(ActivityConstants.CONNECTION_KEY));
-        System.out.println("History Fragment: " + connection.getId());
+        MqttConnection mqttConnection = connections.get(this.getArguments().getString(ActivityConstants.CONNECTION_KEY));
+        System.out.println("History Fragment: " + mqttConnection.getId());
         setHasOptionsMenu(true);
-        messages = connection.getMessages();
-        connection.addReceivedMessageListner(new IReceivedMessageListener() {
+        messages = mqttConnection.getMessages();
+        mqttConnection.addReceivedMessageListner(new IMqttReceivedMessageListener() {
             @Override
-            public void onMessageReceived(ReceivedMessage message) {
+            public void onMessageReceived(MqttReceivedMessageData message) {
                 System.out.println("GOT A MESSAGE in history " + new String(message.getMessage().getPayload()));
                 System.out.println("M: " + messages.size());
                 messageListAdapter.notifyDataSetChanged();

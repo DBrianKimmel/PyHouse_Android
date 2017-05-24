@@ -3,7 +3,7 @@
  */
 package org.pyhouse.pyhouse_android.model;
 
-import org.pyhouse.pyhouse_android.activity.Connection;
+import org.pyhouse.pyhouse_android.activity.MqttConnection;
 
 
 public class NavDrawerItem {
@@ -11,9 +11,9 @@ public class NavDrawerItem {
     private String title;
     private String handle;
 
-    public NavDrawerItem(Connection connection){
-        this.title = connection.getId();
-        this.handle = connection.handle();
+    public NavDrawerItem(MqttConnection mqttConnection){
+        this.title = mqttConnection.getId();
+        this.handle = mqttConnection.handle();
     }
 
     public String getTitle(){

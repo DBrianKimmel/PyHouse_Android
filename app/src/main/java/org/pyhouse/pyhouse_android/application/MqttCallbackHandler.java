@@ -15,9 +15,9 @@ import org.eclipse.paho.client.mqttv3.MqttCallback;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import org.pyhouse.pyhouse_android.R;
-import org.pyhouse.pyhouse_android.activity.Connection;
+import org.pyhouse.pyhouse_android.activity.MqttConnection;
 import org.pyhouse.pyhouse_android.activity.Notify;
-import org.pyhouse.pyhouse_android.internal.Connections;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
 
 class MqttCallbackHandler implements MqttCallback {
 
@@ -31,7 +31,7 @@ class MqttCallbackHandler implements MqttCallback {
     /**
      * Creates an <code>MqttCallbackHandler</code> object
      * @param context The application's context
-     * @param clientHandle The handle to a {@link Connection} object
+     * @param clientHandle The handle to a {@link MqttConnection} object
      */
     public MqttCallbackHandler(Context context, String clientHandle) {
         this.context = context;
@@ -44,10 +44,10 @@ class MqttCallbackHandler implements MqttCallback {
     @Override
     public void connectionLost(Throwable cause) {
         if (cause != null) {
-            Log.d(TAG, "Connection Lost: " + cause.getMessage());
-            Connection c = Connections.getInstance(context).getConnection(clientHandle);
-            c.addAction("Connection Lost");
-            c.changeConnectionStatus(Connection.ConnectionStatus.DISCONNECTED);
+            Log.d(TAG, "MqttConnection Lost: " + cause.getMessage());
+            MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
+            c.addAction("MqttConnection Lost");
+            c.changeConnectionStatus(MqttConnection.ConnectionStatus.DISCONNECTED);
             String message = context.getString(R.string.connection_lost, c.getId(), c.getHostName());
             //build intent
             Intent intent = new Intent();
@@ -64,7 +64,7 @@ class MqttCallbackHandler implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         //Get connection object associated with this object
-        Connection c = Connections.getInstance(context).getConnection(clientHandle);
+        MqttConnection c = MqttConnectionCollection.getInstance(context).getConnection(clientHandle);
         c.messageArrived(topic, message);
         //get the string from strings.xml and format
         String messageString = context.getString(R.string.messageRecieved, new String(message.getPayload()), topic+";qos:"+message.getQos()+";retained:"+message.isRetained());

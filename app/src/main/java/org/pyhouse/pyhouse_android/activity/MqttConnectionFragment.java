@@ -16,26 +16,26 @@ import android.widget.Switch;
 
 import org.pyhouse.pyhouse_android.R;
 import org.pyhouse.pyhouse_android.application.MainActivity;
-import org.pyhouse.pyhouse_android.internal.Connections;
+import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
 
 import java.util.Map;
 
 
-public class ConnectionFragment extends Fragment {
-    private Connection connection;
+public class MqttConnectionFragment extends Fragment {
+    private MqttConnection mqttConnection;
     private FragmentTabHost mTabHost;
     private Switch connectSwitch;
 
-    public ConnectionFragment() {
+    public MqttConnectionFragment() {
         setHasOptionsMenu(true);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Map<String, Connection> connections = Connections.getInstance(this.getActivity())
+        Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(this.getActivity())
                 .getConnections();
-        connection = connections.get(this.getArguments().getString(ActivityConstants.CONNECTION_KEY));
+        mqttConnection = connections.get(this.getArguments().getString(ActivityConstants.CONNECTION_KEY));
         boolean connected = this.getArguments().getBoolean(ActivityConstants.CONNECTED, false);
 
         setHasOptionsMenu(true);
@@ -49,15 +49,15 @@ public class ConnectionFragment extends Fragment {
 
 
         Bundle bundle = new Bundle();
-        bundle.putString(ActivityConstants.CONNECTION_KEY, connection.handle());
+        bundle.putString(ActivityConstants.CONNECTION_KEY, mqttConnection.handle());
 
         // Initialise the tab-host
         mTabHost = (FragmentTabHost) rootView.findViewById(android.R.id.tabhost);
         mTabHost.setup(getActivity(), getChildFragmentManager(), android.R.id.tabcontent);
         // Add a tab to the tabHost
         mTabHost.addTab(mTabHost.newTabSpec("History").setIndicator("History"), HistoryFragment.class, bundle);
-        mTabHost.addTab(mTabHost.newTabSpec("Publish").setIndicator("Publish"), PublishFragment.class, bundle);
-        mTabHost.addTab(mTabHost.newTabSpec("Subscribe").setIndicator("Subscribe"), SubscriptionFragment.class, bundle);
+        mTabHost.addTab(mTabHost.newTabSpec("Publish").setIndicator("Publish"), MqttPublishFragment.class, bundle);
+        mTabHost.addTab(mTabHost.newTabSpec("Subscribe").setIndicator("Subscribe"), MqttSubscriptionFragment.class, bundle);
         return rootView;
 
     }
@@ -79,15 +79,15 @@ public class ConnectionFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    ((MainActivity) getActivity()).connect(connection);
+                    ((MainActivity) getActivity()).connect(mqttConnection);
                     changeConnectedState(true);
                 } else {
-                    ((MainActivity) getActivity()).disconnect(connection);
+                    ((MainActivity) getActivity()).disconnect(mqttConnection);
                     changeConnectedState(false);
                 }
             }
         });
-        changeConnectedState(connection.isConnected());
+        changeConnectedState(mqttConnection.isConnected());
         super.onCreateOptionsMenu(menu, inflater);
     }
 

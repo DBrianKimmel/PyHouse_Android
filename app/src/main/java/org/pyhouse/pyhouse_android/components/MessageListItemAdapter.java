@@ -13,19 +13,19 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import org.pyhouse.pyhouse_android.R;
-import org.pyhouse.pyhouse_android.model.ReceivedMessage;
+import org.pyhouse.pyhouse_android.model.MqttReceivedMessageData;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
-public class MessageListItemAdapter extends ArrayAdapter<ReceivedMessage> {
+public class MessageListItemAdapter extends ArrayAdapter<MqttReceivedMessageData> {
 
     private final Context context;
-    private final ArrayList<ReceivedMessage> messages;
+    private final ArrayList<MqttReceivedMessageData> messages;
 
-    public MessageListItemAdapter(Context context, ArrayList<ReceivedMessage> messages) {
+    public MessageListItemAdapter(Context context, ArrayList<MqttReceivedMessageData> messages) {
         super(context, R.layout.message_list_item, messages);
         this.context = context;
         this.messages = messages;

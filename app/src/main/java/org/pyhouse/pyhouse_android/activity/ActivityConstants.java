@@ -72,7 +72,7 @@ public class ActivityConstants {
     static final String ssl = "ssl";
     /** SSL Key File Bundle Key **/
     static final String ssl_key = "ssl_key";
-    /** Connections Bundle Key **/
+    /** MqttConnectionCollection Bundle Key **/
     static final String connections = "connections";
     /** Clean Session Flag Bundle Key **/
     static final String cleanSession = "cleanSession";
@@ -81,10 +81,10 @@ public class ActivityConstants {
 
   /* Property names */
 
-    /** Property name for the history field in {@link Connection} object for use with {@link java.beans.PropertyChangeEvent} **/
+    /** Property name for the history field in {@link MqttConnection} object for use with {@link java.beans.PropertyChangeEvent} **/
     static final String historyProperty = "history";
 
-    /** Property name for the connection status field in {@link Connection} object for use with {@link java.beans.PropertyChangeEvent} **/
+    /** Property name for the connection status field in {@link MqttConnection} object for use with {@link java.beans.PropertyChangeEvent} **/
     public static final String ConnectionStatusProperty = "connectionStatus";
 
   /* Useful constants*/

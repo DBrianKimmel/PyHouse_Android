@@ -44,21 +44,21 @@ public class FragmentDrawer extends Fragment {
         this.drawerListener = listener;
     }
 
-    public void addConnection(Connection connection) {
-        System.out.println("Adding new Connection:  " + connection.getId());
-        NavDrawerItem navItem = new NavDrawerItem(connection);
+    public void addConnection(MqttConnection mqttConnection) {
+        System.out.println("Adding new MqttConnection:  " + mqttConnection.getId());
+        NavDrawerItem navItem = new NavDrawerItem(mqttConnection);
         data.add(navItem);
         mAdapter.notifyDataSetChanged();
     }
 
-    public void updateConnection(Connection connection) {
-        System.out.println("Updating Connection: " + connection.getId());
+    public void updateConnection(MqttConnection mqttConnection) {
+        System.out.println("Updating MqttConnection: " + mqttConnection.getId());
         Iterator<NavDrawerItem> iterator = data.iterator();
         int index = 0;
         while (iterator.hasNext()) {
             NavDrawerItem item = iterator.next();
-            if (item.getHandle().equals(connection.handle())) {
-                item = new NavDrawerItem(connection);
+            if (item.getHandle().equals(mqttConnection.handle())) {
+                item = new NavDrawerItem(mqttConnection);
                 data.set(index, item);
                 break;
             }
@@ -67,12 +67,12 @@ public class FragmentDrawer extends Fragment {
         mAdapter.notifyDataSetChanged();
     }
 
-    public void removeConnection(Connection connection) {
-        System.out.println("Removing connection from drawer: " + connection.getId());
+    public void removeConnection(MqttConnection mqttConnection) {
+        System.out.println("Removing mqttConnection from drawer: " + mqttConnection.getId());
         Iterator<NavDrawerItem> iterator = data.iterator();
         while (iterator.hasNext()) {
             NavDrawerItem item = iterator.next();
-            if (item.getHandle().equals(connection.handle())) {
+            if (item.getHandle().equals(mqttConnection.handle())) {
                 iterator.remove();
             }
         }

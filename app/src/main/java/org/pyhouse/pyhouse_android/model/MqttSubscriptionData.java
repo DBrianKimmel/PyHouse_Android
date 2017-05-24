@@ -5,7 +5,7 @@ package org.pyhouse.pyhouse_android.model;
  */
 
 
-public class MqttSubscription {
+public class MqttSubscriptionData {
 
     private String topic;
     private int qos;
@@ -14,7 +14,7 @@ public class MqttSubscription {
     private long persistenceId;
     private boolean enableNotifications;
 
-    public MqttSubscription(String topic, int qos, String clientHandle, boolean enableNotifications){
+    public MqttSubscriptionData(String topic, int qos, String clientHandle, boolean enableNotifications){
         this.topic = topic;
         this.qos = qos;
         this.clientHandle = clientHandle;
@@ -71,7 +71,7 @@ public class MqttSubscription {
 
     @Override
     public String toString() {
-        return "Subscription{" +
+        return "MqttSubscriptionModel{" +
                 "topic='" + topic + '\'' +
                 ", qos=" + qos +
                 ", clientHandle='" + clientHandle + '\'' +

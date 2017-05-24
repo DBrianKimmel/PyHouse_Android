@@ -4,9 +4,8 @@ xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 android:orientation="vertical"
-tools:context="org.eclipse.paho.android.sample.activity.MessagesFragment"
+tools:context="org.pyhouse.pyhouse_android.activity.MessagesFragment"
 android:layout_marginTop="56dp">
-
 
 <LinearLayout
     android:id="@+id/topic_group"
@@ -25,22 +24,17 @@ android:layout_marginTop="56dp">
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginRight="30dp"
+        android:layout_marginEnd="30dp"
         android:inputType="textMultiLine"
         android:ems="10"
         android:lines="1"
         android:id="@+id/topic"/>
 </LinearLayout>
 
-
-
-
-
 <View
     android:id="@+id/divider8"
     style="@style/Divider"
     android:layout_below="@+id/topic_group" />
-
-
 
 <LinearLayout
     android:id="@+id/lwt_message_group"
@@ -66,15 +60,10 @@ android:layout_marginTop="56dp">
         android:id="@+id/message"/>
 </LinearLayout>
 
-
-
-
 <View
     android:id="@+id/divider9"
     style="@style/Divider"
     android:layout_below="@+id/lwt_message_group" />
-
-
 
 <LinearLayout
     android:id="@+id/lwt_qos_group"
@@ -115,8 +104,5 @@ android:layout_marginTop="56dp">
         android:layout_below="@+id/retain_switch"
         android:layout_centerHorizontal="true"
         android:text="@string/publish" />
-
-
-
 
 </RelativeLayout>

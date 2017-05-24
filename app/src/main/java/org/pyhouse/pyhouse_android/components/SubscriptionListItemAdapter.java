@@ -14,19 +14,19 @@ import android.content.Context;
         import android.widget.TextView;
 
 import org.pyhouse.pyhouse_android.R;
-import org.pyhouse.pyhouse_android.model.Subscription;
+import org.pyhouse.pyhouse_android.model.MqttSubscriptionModel;
 
 import java.util.ArrayList;
 
 
-public class SubscriptionListItemAdapter extends ArrayAdapter<Subscription>{
+public class SubscriptionListItemAdapter extends ArrayAdapter<MqttSubscriptionModel>{
 
     private final Context context;
-    private final ArrayList<Subscription> topics;
+    private final ArrayList<MqttSubscriptionModel> topics;
     private final ArrayList<OnUnsubscribeListner> unsubscribeListners = new ArrayList<OnUnsubscribeListner>();
     //private final Map<String, String> topics;
 
-    public SubscriptionListItemAdapter(Context context, ArrayList<Subscription> topics){
+    public SubscriptionListItemAdapter(Context context, ArrayList<MqttSubscriptionModel> topics){
         super(context, R.layout.subscription_list_item, topics);
         this.context = context;
         this.topics = topics;
@@ -68,7 +68,7 @@ public class SubscriptionListItemAdapter extends ArrayAdapter<Subscription>{
     }
 
     public interface OnUnsubscribeListner{
-        void onUnsubscribe(Subscription subscription);
+        void onUnsubscribe(MqttSubscriptionModel mqttSubscriptionModel);
     }
 
 

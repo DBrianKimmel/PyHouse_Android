@@ -9,9 +9,9 @@ import java.util.Date;
  */
 
 
-public class ReceivedMessage {
+public class MqttReceivedMessageData {
 
-    public ReceivedMessage(String topic, MqttMessage message) {
+    public MqttReceivedMessageData(String topic, MqttMessage message) {
         this.topic = topic;
         this.message = message;
         this.timestamp = new Date();
@@ -35,7 +35,7 @@ public class ReceivedMessage {
 
     @Override
     public String toString() {
-        return "ReceivedMessage{" +
+        return "MqttReceivedMessageData{" +
                 "topic='" + topic + '\'' +
                 ", message=" + message +
                 ", timestamp=" + timestamp +
