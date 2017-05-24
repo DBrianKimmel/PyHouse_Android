@@ -1,9 +1,13 @@
-package org.pyhouse.pyhouse_android.internal;
-
 /*
  * Created by briank on 5/20/17.
+ *
+ * Persistence -
+ * This deals with interacting with the database to persist MqttConnection objects so created clients survive
+ * the destruction of the singleton MqttConnectionCollection object.
+ *
  */
 
+package org.pyhouse.pyhouse_android.internal;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -24,13 +28,13 @@ import java.util.List;
 
 
 /**
- * <code>Persistence</code> deals with interacting with the database to persist
+ * <code>MqttPersistence</code> deals with interacting with the database to persist
  * {@link MqttConnection} objects so created clients survive, the destruction of the
  * singleton {@link MqttConnectionCollection} object.
  */
-public class Persistence extends SQLiteOpenHelper implements BaseColumns {
+public class MqttPersistence extends SQLiteOpenHelper implements BaseColumns {
 
-    private static final String TAG = "Persistence";
+    private static final String TAG = "MqttPersistence";
     private static final int DATABASE_VERSION = 1;
     private static final String DATABASE_NAME = "connections.db";
     private static final String TABLE_CONNECTIONS = "connections";
@@ -107,7 +111,7 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
      *
      * @param context Context that the application is running in
      */
-    public Persistence(Context context) {
+    public MqttPersistence(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
@@ -142,9 +146,9 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
      * Persist a MqttConnection to the database
      *
      * @param mqttConnection the mqttConnection to persist
-     * @throws PersistenceException If storing the data fails
+     * @throws MqttPersistenceException If storing the data fails
      */
-    public void persistConnection(MqttConnection mqttConnection) throws PersistenceException {
+    public void persistConnection(MqttConnection mqttConnection) throws MqttPersistenceException {
         SQLiteDatabase db = getWritableDatabase();
 
         //insert the values into the tables, returns the ID for the row
@@ -153,7 +157,7 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
         db.close(); //close the db then deal with the result of the query
 
         if (newRowId == -1) {
-            throw new PersistenceException("Failed to persist mqttConnection: " + mqttConnection.handle());
+            throw new MqttPersistenceException("Failed to persist mqttConnection: " + mqttConnection.handle());
         } else { //Successfully persisted assigning persistenceID
             mqttConnection.assignPersistenceId(newRowId);
         }
@@ -208,9 +212,9 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
      * Persist a MqttSubscriptionModel to the database
      *
      * @param mqttSubscriptionModel the mqttSubscriptionModel to persist
-     * @throws PersistenceException If storing the data fails
+     * @throws MqttPersistenceException If storing the data fails
      */
-    public long persistSubscription(MqttSubscriptionModel mqttSubscriptionModel) throws PersistenceException {
+    public long persistSubscription(MqttSubscriptionModel mqttSubscriptionModel) throws MqttPersistenceException {
         SQLiteDatabase db = getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put(COLUMN_CLIENT_HANDLE, mqttSubscriptionModel.getClientHandle());
@@ -221,7 +225,7 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
         long newRowId = db.insert(TABLE_SUBSCRIPTIONS, null, values);
         db.close();
         if (newRowId == -1) {
-            throw new PersistenceException("Failed to persist mqttSubscriptionModel: " + mqttSubscriptionModel.toString());
+            throw new MqttPersistenceException("Failed to persist mqttSubscriptionModel: " + mqttSubscriptionModel.toString());
         } else {
             mqttSubscriptionModel.setPersistenceId(newRowId);
             return newRowId;
@@ -249,9 +253,9 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
      *
      * @param context Context for creating {@link MqttConnection} objects
      * @return list of connections that have been restored
-     * @throws PersistenceException if restoring connections fails, this is thrown
+     * @throws MqttPersistenceException if restoring connections fails, this is thrown
      */
-    public List<MqttConnection> restoreConnections(Context context) throws PersistenceException {
+    public List<MqttConnection> restoreConnections(Context context) throws MqttPersistenceException {
 
 
         //columns to return
@@ -295,7 +299,7 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
         MqttConnection mqttConnection;
         for (int i = 0; i < c.getCount(); i++) {
             if (!c.moveToNext()) { //move to the next item throw persistence exception, if it fails
-                throw new PersistenceException("Failed restoring mqttConnection - count: " + c.getCount() + "loop iteration: " + i);
+                throw new MqttPersistenceException("Failed restoring mqttConnection - count: " + c.getCount() + "loop iteration: " + i);
             }
             //get data from cursor
             Long id = c.getLong(c.getColumnIndexOrThrow(_ID));
@@ -347,7 +351,7 @@ public class Persistence extends SQLiteOpenHelper implements BaseColumns {
             ArrayList<MqttSubscriptionModel> mqttSubscriptionModels = new ArrayList<MqttSubscriptionModel>(sub_c.getCount());
             for (int x = 0; x < sub_c.getCount(); x++) {
                 if (!sub_c.moveToNext()) { //move to the next item throw persistence exception, if it fails
-                    throw new PersistenceException("Failed restoring subscription - count: " + sub_c.getCount() + "loop iteration: " + x);
+                    throw new MqttPersistenceException("Failed restoring subscription - count: " + sub_c.getCount() + "loop iteration: " + x);
                 }
                 Long sub_id = sub_c.getLong(sub_c.getColumnIndexOrThrow(_ID));
                 String sub_clientHandle = sub_c.getString(sub_c.getColumnIndexOrThrow(COLUMN_CLIENT_HANDLE));

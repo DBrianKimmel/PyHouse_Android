@@ -13,8 +13,8 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
 
 import org.pyhouse.pyhouse_android.R;
 import org.pyhouse.pyhouse_android.internal.IMqttReceivedMessageListener;
-import org.pyhouse.pyhouse_android.internal.Persistence;
-import org.pyhouse.pyhouse_android.internal.PersistenceException;
+import org.pyhouse.pyhouse_android.internal.MqttPersistence;
+import org.pyhouse.pyhouse_android.internal.MqttPersistenceException;
 import org.pyhouse.pyhouse_android.model.MqttReceivedMessageData;
 import org.pyhouse.pyhouse_android.model.MqttSubscriptionModel;
 
@@ -70,7 +70,7 @@ public class MqttConnection {
     private boolean tlsConnection = true;
 
     /**
-     * Persistence id, used by {@link Persistence}
+     * MqttPersistence id, used by {@link MqttPersistence}
      **/
     private long persistenceId = -1;
 
@@ -381,12 +381,12 @@ public class MqttConnection {
                 final ActionListener callback = new ActionListener(this.context,
                         ActionListener.Action.SUBSCRIBE, this, actionArgs);
                 this.getClient().subscribe(mqttSubscriptionModel.getTopic(), mqttSubscriptionModel.getQos(), null, callback);
-                Persistence persistence = new Persistence(context);
+                MqttPersistence mqttPersistence = new MqttPersistence(context);
 
-                long rowId = persistence.persistSubscription(mqttSubscriptionModel);
+                long rowId = mqttPersistence.persistSubscription(mqttSubscriptionModel);
                 mqttSubscriptionModel.setPersistenceId(rowId);
                 subscriptions.put(mqttSubscriptionModel.getTopic(), mqttSubscriptionModel);
-            } catch (PersistenceException pe) {
+            } catch (MqttPersistenceException pe) {
                 throw new MqttException(pe);
             }
 
@@ -398,8 +398,8 @@ public class MqttConnection {
         if (subscriptions.containsKey(mqttSubscriptionModel.getTopic())) {
             this.getClient().unsubscribe(mqttSubscriptionModel.getTopic());
             subscriptions.remove(mqttSubscriptionModel.getTopic());
-            Persistence persistence = new Persistence(context);
-            persistence.deleteSubscription(mqttSubscriptionModel);
+            MqttPersistence mqttPersistence = new MqttPersistence(context);
+            mqttPersistence.deleteSubscription(mqttSubscriptionModel);
         }
 
     }

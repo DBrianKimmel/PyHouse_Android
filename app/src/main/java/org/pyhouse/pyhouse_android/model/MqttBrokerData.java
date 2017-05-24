@@ -1,5 +1,7 @@
 /*
  * Created by briank on 5/19/17.
+ *
+ * This default data is where the initial connection will be directed.if the database is empty.
  */
 
 package org.pyhouse.pyhouse_android.model;

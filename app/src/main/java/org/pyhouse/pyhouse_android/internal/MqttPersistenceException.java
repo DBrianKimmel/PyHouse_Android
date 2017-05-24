@@ -4,19 +4,20 @@
 package org.pyhouse.pyhouse_android.internal;
 
 
-/**
- * Persistence Exception, defines an error with persisting a {@link Connection}
- * fails. Example operations are {@link Persistence#persistConnection(Connection)} and {@link Persistence#restoreConnections(android.content.Context)};
+/*
+ * MqttPersistence Exception, defines an error with persisting a {@link mqttConnection}
+ * fails.
+ * Example operations are {@link MqttPersistence#persistConnection(MqttConnection)} and {@link MqttPersistence#restoreConnections(android.content.Context)};
  * these operations throw this exception to indicate unexpected results occurred when performing actions on the database.
  *
  */
-public class PersistenceException extends Exception {
+public class MqttPersistenceException extends Exception {
 
     /**
      * Creates a persistence exception with the given error message
      * @param message The error message to display
      */
-    public PersistenceException(String message) {
+    public MqttPersistenceException(String message) {
         super(message);
     }
 

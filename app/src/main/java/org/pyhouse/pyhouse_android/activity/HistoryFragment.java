@@ -1,8 +1,8 @@
 /*
  * Created by briank on 5/21/17.
  */
-package org.pyhouse.pyhouse_android.activity;
 
+package org.pyhouse.pyhouse_android.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,14 +25,10 @@ import java.util.Map;
 public class HistoryFragment extends Fragment {
 
     private MessageListItemAdapter messageListAdapter;
-
-
     private ArrayList<MqttReceivedMessageData> messages;
 
     public HistoryFragment() {
-
         setHasOptionsMenu(true);
-
     }
 
     @Override
@@ -45,6 +41,7 @@ public class HistoryFragment extends Fragment {
         setHasOptionsMenu(true);
         messages = mqttConnection.getMessages();
         mqttConnection.addReceivedMessageListner(new IMqttReceivedMessageListener() {
+
             @Override
             public void onMessageReceived(MqttReceivedMessageData message) {
                 System.out.println("GOT A MESSAGE in history " + new String(message.getMessage().getPayload()));
@@ -52,23 +49,17 @@ public class HistoryFragment extends Fragment {
                 messageListAdapter.notifyDataSetChanged();
             }
         });
-
-
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_connection_history, container, false);
-
         messageListAdapter = new MessageListItemAdapter(getActivity(), messages);
         ListView messageHistoryListView = (ListView) rootView.findViewById(R.id.history_list_view);
         messageHistoryListView.setAdapter(messageListAdapter);
-
         Button clearButton = (Button) rootView.findViewById(R.id.history_clear_button);
         clearButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 messages.clear();
@@ -78,9 +69,7 @@ public class HistoryFragment extends Fragment {
 
         // Inflate the layout for this fragment
         return rootView;
-
-
     }
-
-
 }
+
+// ### END DBK

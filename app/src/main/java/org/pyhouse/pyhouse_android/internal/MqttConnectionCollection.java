@@ -1,5 +1,9 @@
 /*
  * Created by briank on 5/21/17.
+ *
+ * MqttConnectionCollection -
+ * This is a singleton class which stores all the connection objects in one central place so they can be passed between activities using a client handle.
+ *
  */
 package org.pyhouse.pyhouse_android.internal;
 
@@ -29,9 +33,9 @@ public class MqttConnectionCollection {
     private HashMap<String, MqttConnection> connections = null;
 
     /**
-     * {@link Persistence} object used to save, delete and restore connections
+     * {@link MqttPersistence} object used to save, delete and restore connections
      **/
-    private Persistence persistence = null;
+    private MqttPersistence mqttPersistence = null;
 
     /**
      * Create a MqttConnectionCollection object
@@ -42,14 +46,14 @@ public class MqttConnectionCollection {
         connections = new HashMap<String, MqttConnection>();
 
         // If there is state, attempt to restore it
-        persistence = new Persistence(context);
+        mqttPersistence = new MqttPersistence(context);
         try {
-            List<MqttConnection> mqttConnectionList = persistence.restoreConnections(context);
+            List<MqttConnection> mqttConnectionList = mqttPersistence.restoreConnections(context);
             for (MqttConnection mqttConnection : mqttConnectionList) {
                 System.out.println("MqttConnection was persisted.." + mqttConnection.handle());
                 connections.put(mqttConnection.handle(), mqttConnection);
             }
-        } catch (PersistenceException e) {
+        } catch (MqttPersistenceException e) {
             e.printStackTrace();
         }
     }
@@ -86,27 +90,14 @@ public class MqttConnectionCollection {
     public void addConnection(MqttConnection mqttConnection) {
         connections.put(mqttConnection.handle(), mqttConnection);
         try {
-            persistence.persistConnection(mqttConnection);
-        } catch (PersistenceException e) {
+            mqttPersistence.persistConnection(mqttConnection);
+        } catch (MqttPersistenceException e) {
             // @todo Handle this error more appropriately
             //error persisting well lets just swallow this
             e.printStackTrace();
         }
 
     }
-
-// --Commented out by Inspection START (12/10/2016, 10:21):
-//    /**
-//     * Create a fully initialised <code>MqttAndroidClient</code> for the parameters given
-//     * @param context The Applications context
-//     * @param serverURI The ServerURI to connect to
-//     * @param clientId The clientId for this client
-//     * @return new instance of MqttAndroidClient
-//     */
-//    public MqttAndroidClient createClient(Context context, String serverURI, String clientId){
-//        return new MqttAndroidClient(context, serverURI, clientId);
-//    }
-// --Commented out by Inspection STOP (12/10/2016, 10:21)
 
     /**
      * Get all the connections associated with this <code>MqttConnectionCollection</code> object.
@@ -124,9 +115,8 @@ public class MqttConnectionCollection {
      */
     public void removeConnection(MqttConnection mqttConnection) {
         connections.remove(mqttConnection.handle());
-        persistence.deleteConnection(mqttConnection);
+        mqttPersistence.deleteConnection(mqttConnection);
     }
-
 
     /**
      * Updates an existing mqttConnection within the map of
@@ -136,8 +126,8 @@ public class MqttConnectionCollection {
      */
     public void updateConnection(MqttConnection mqttConnection) {
         connections.put(mqttConnection.handle(), mqttConnection);
-        persistence.updateConnection(mqttConnection);
+        mqttPersistence.updateConnection(mqttConnection);
     }
-
-
 }
+
+// END DBK
