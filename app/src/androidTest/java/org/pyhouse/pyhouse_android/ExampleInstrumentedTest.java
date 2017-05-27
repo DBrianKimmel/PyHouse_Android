@@ -24,3 +24,4 @@ public class ExampleInstrumentedTest {
         assertEquals("org.pyhouse.pyhouse_android", appContext.getPackageName());
     }
 }
+

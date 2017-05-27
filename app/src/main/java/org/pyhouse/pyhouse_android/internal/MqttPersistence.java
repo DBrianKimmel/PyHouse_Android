@@ -150,12 +150,9 @@ public class MqttPersistence extends SQLiteOpenHelper implements BaseColumns {
      */
     public void persistConnection(MqttConnection mqttConnection) throws MqttPersistenceException {
         SQLiteDatabase db = getWritableDatabase();
-
         //insert the values into the tables, returns the ID for the row
         long newRowId = db.insert(TABLE_CONNECTIONS, null, getValues(mqttConnection));
-
         db.close(); //close the db then deal with the result of the query
-
         if (newRowId == -1) {
             throw new MqttPersistenceException("Failed to persist mqttConnection: " + mqttConnection.handle());
         } else { //Successfully persisted assigning persistenceID

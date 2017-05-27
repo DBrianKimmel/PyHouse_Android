@@ -69,13 +69,13 @@ public class ManageConnectionFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 System.out.println("Editing MqttConnection: " + name + ".");
-                EditConnectionFragment editConnectionFragment = new EditConnectionFragment();
+                MqttEditConnectionFragment mqttEditConnectionFragment = new MqttEditConnectionFragment();
                 Bundle bundle = new Bundle();
                 bundle.putString(ActivityConstants.CONNECTION_KEY, mqttConnection.handle());
-                editConnectionFragment.setArguments(bundle);
+                mqttEditConnectionFragment.setArguments(bundle);
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.container_body, editConnectionFragment);
+                fragmentTransaction.replace(R.id.container_body, mqttEditConnectionFragment);
                 fragmentTransaction.commit();
             }
         });

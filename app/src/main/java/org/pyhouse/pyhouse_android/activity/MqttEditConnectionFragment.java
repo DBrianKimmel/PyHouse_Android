@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.Random;
 
 
-public class EditConnectionFragment extends Fragment {
+public class MqttEditConnectionFragment extends Fragment {
 
     private EditText clientId;
     private EditText serverHostname;
@@ -54,7 +54,7 @@ public class EditConnectionFragment extends Fragment {
     private static final Random random = new Random();
     private static final int length = 8;
 
-    public EditConnectionFragment() {
+    public MqttEditConnectionFragment() {
         // Required empty public constructor
     }
 
@@ -65,8 +65,7 @@ public class EditConnectionFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_edit_connection, container, false);
         clientId = (EditText) rootView.findViewById(R.id.client_id);
         serverHostname = (EditText) rootView.findViewById(R.id.hostname);
@@ -83,13 +82,9 @@ public class EditConnectionFragment extends Fragment {
         lwtMessage = (EditText) rootView.findViewById(R.id.lwt_message);
         lwtQos = (Spinner) rootView.findViewById(R.id.lwt_qos_spinner);
         lwtRetain = (Switch) rootView.findViewById(R.id.retain_switch);
-
-
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), R.array.qos_options, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         lwtQos.setAdapter(adapter);
-
-
         if (this.getArguments() != null && this.getArguments().getString(ActivityConstants.CONNECTION_KEY) != null) {
             /** This Form is referencing an existing mqttConnection. **/
             //this.getArguments().getString(ActivityConstants.CONNECTION_KEY)
@@ -102,18 +97,12 @@ public class EditConnectionFragment extends Fragment {
             formModel = new MqttConnectionModel(mqttConnection);
             System.out.println("Form Model: " + formModel.toString());
             formModel.setClientHandle(mqttConnection.handle());
-
             populateFromConnectionModel(formModel);
-
         } else {
             formModel = new MqttConnectionModel();
             populateFromConnectionModel(formModel);
-
         }
-
         setFormItemListeners();
-
-
         // Inflate the layout for this fragment
         return rootView;
     }
@@ -122,12 +111,10 @@ public class EditConnectionFragment extends Fragment {
         clientId.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -139,12 +126,10 @@ public class EditConnectionFragment extends Fragment {
         serverHostname.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -156,12 +141,10 @@ public class EditConnectionFragment extends Fragment {
         serverPort.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -182,12 +165,10 @@ public class EditConnectionFragment extends Fragment {
         username.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -197,19 +178,16 @@ public class EditConnectionFragment extends Fragment {
                 } else {
                     formModel.setUsername(ActivityConstants.empty);
                 }
-
             }
         });
 
         password.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -224,12 +202,10 @@ public class EditConnectionFragment extends Fragment {
         tlsServerKey.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -240,12 +216,10 @@ public class EditConnectionFragment extends Fragment {
         tlsClientKey.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -256,12 +230,10 @@ public class EditConnectionFragment extends Fragment {
         timeout.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -274,12 +246,10 @@ public class EditConnectionFragment extends Fragment {
         keepAlive.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -292,12 +262,10 @@ public class EditConnectionFragment extends Fragment {
         lwtTopic.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -308,12 +276,10 @@ public class EditConnectionFragment extends Fragment {
         lwtMessage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-
             }
 
             @Override
@@ -329,7 +295,6 @@ public class EditConnectionFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
             }
         });
 
@@ -339,7 +304,6 @@ public class EditConnectionFragment extends Fragment {
                 formModel.setLwtRetain(isChecked);
             }
         });
-
     }
 
     @SuppressLint("SetTextI18n")
@@ -372,14 +336,10 @@ public class EditConnectionFragment extends Fragment {
             String clientHandle = sb.toString() + '-' + formModel.getServerHostName() + '-' + formModel.getClientId();
             formModel.setClientHandle(clientHandle);
             ((MainActivity) getActivity()).persistAndConnect(formModel);
-
         } else {
             // Update an existing connection
-
             ((MainActivity) getActivity()).updateAndConnect(formModel);
         }
-
-
     }
 
     @Override
@@ -400,8 +360,8 @@ public class EditConnectionFragment extends Fragment {
         if (id == R.id.action_save_connection) {
             saveConnection();
         }
-
         return super.onOptionsItemSelected(item);
     }
-
 }
+
+// ### END DBK

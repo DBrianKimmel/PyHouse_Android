@@ -34,7 +34,7 @@ import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import org.pyhouse.pyhouse_android.R;
-import org.pyhouse.pyhouse_android.activity.ActionListener;
+import org.pyhouse.pyhouse_android.activity.MqttActionListener;
 import org.pyhouse.pyhouse_android.activity.ActivityConstants;
 import org.pyhouse.pyhouse_android.activity.MqttConnection;
 import org.pyhouse.pyhouse_android.activity.MqttConnectionFragment;
@@ -235,8 +235,8 @@ public class MainActivity extends AppCompatActivity
 
             String[] actionArgs = new String[1];
             actionArgs[0] = model.getClientId();
-            final ActionListener callback = new ActionListener(this,
-                    ActionListener.Action.CONNECT, mqttConnection, actionArgs);
+            final MqttActionListener callback = new MqttActionListener(this,
+                    MqttActionListener.Action.CONNECT, mqttConnection, actionArgs);
             mqttConnection.getClient().setCallback(new MqttCallbackHandler(this, model.getClientHandle()));
 
             mqttConnection.getClient().setTraceCallback(new MqttTraceCallback());
@@ -273,8 +273,8 @@ public class MainActivity extends AppCompatActivity
 
         String[] actionArgs = new String[1];
         actionArgs[0] = model.getClientId();
-        final ActionListener callback = new ActionListener(this,
-                ActionListener.Action.CONNECT, mqttConnection, actionArgs);
+        final MqttActionListener callback = new MqttActionListener(this,
+                MqttActionListener.Action.CONNECT, mqttConnection, actionArgs);
         mqttConnection.getClient().setCallback(new MqttCallbackHandler(this, model.getClientHandle()));
 
 
@@ -300,8 +300,7 @@ public class MainActivity extends AppCompatActivity
 
         }
         catch (MqttException e) {
-            Log.e(this.getClass().getCanonicalName(),
-                    "MqttException occurred", e);
+            Log.e(TAG, "MqttException occurred", e);
         }
 
     }
@@ -387,8 +386,8 @@ public class MainActivity extends AppCompatActivity
     public void connect(MqttConnection mqttConnection) {
         String[] actionArgs = new String[1];
         actionArgs[0] = mqttConnection.getId();
-        final ActionListener callback = new ActionListener(this,
-                ActionListener.Action.CONNECT, mqttConnection, actionArgs);
+        final MqttActionListener callback = new MqttActionListener(this,
+                MqttActionListener.Action.CONNECT, mqttConnection, actionArgs);
         mqttConnection.getClient().setCallback(new MqttCallbackHandler(this, mqttConnection.handle()));
         try {
             mqttConnection.getClient().connect(mqttConnection.getConnectionOptions(), null, callback);
@@ -411,8 +410,8 @@ public class MainActivity extends AppCompatActivity
             String[] actionArgs = new String[2];
             actionArgs[0] = message;
             actionArgs[1] = topic;
-            final ActionListener callback = new ActionListener(this,
-                    ActionListener.Action.PUBLISH, mqttConnection, actionArgs);
+            final MqttActionListener callback = new MqttActionListener(this,
+                    MqttActionListener.Action.PUBLISH, mqttConnection, actionArgs);
             mqttConnection.getClient().publish(topic, message.getBytes(), qos, retain, null, callback);
         } catch( MqttException ex){
             Log.e(TAG, "Exception occurred during publish: " + ex.getMessage());

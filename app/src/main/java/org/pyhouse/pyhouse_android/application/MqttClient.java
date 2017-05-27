@@ -26,9 +26,9 @@ import java.io.UnsupportedEncodingException;
 public class MqttClient extends AppCompatActivity {
     static final String TAG = "MqttClient           :";
     static final String mMqttClientId = "PyH-" + System.nanoTime();
-    static final String mMqttBrokerAddress = "tcp://192.168.1.10:1883";
+    //static final String mMqttBrokerAddress = "tcp://192.168.1.10:1883";
+    static final String mMqttBrokerAddress = "tcp://broker.hivemq.com:1883";
     static String lwtTopic = "pyhouse/" + HouseData.Name + "users/last/will";
-
     static Context mContext;
     static MqttAndroidClient mClient;
     MqttConnectOptions mOptions;
@@ -46,7 +46,7 @@ public class MqttClient extends AppCompatActivity {
      * The causes the connect action
      */
     public void MqttConnect() {
-        Log.w(TAG, "Enter MqttConnect");
+        Log.w(TAG, "MqttConnect to " + mMqttBrokerAddress);
         mOptions = new MqttConnectOptions();
         mClient = new MqttAndroidClient(
                 mContext,
@@ -62,14 +62,14 @@ public class MqttClient extends AppCompatActivity {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     // We are connected
-                    Log.w(TAG, "Connected MQTT");
+                    Log.w(TAG, "Mqtt Connected to " + mMqttBrokerAddress);
                     MqttSubscribe("pyhouse/");
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
                     // Something went wrong e.g. connection timeout or firewall problems
-                    Log.w(TAG, "onFailure");
+                    Log.w(TAG, "Mqtt Failed to connect to " + mMqttBrokerAddress);
                 }
             });
         } catch (MqttException e) {
@@ -91,8 +91,8 @@ public class MqttClient extends AppCompatActivity {
         }
     }
 
-    public void MqttSubscribe(String pTopic) {
-        Log.w(TAG, "Enter MqttSubscribe");
+    public void MqttSubscribe(final String pTopic) {
+        Log.w(TAG, "Entering MqttSubscribe");
         int qos = 1;
         try {
             IMqttToken subToken = mClient.subscribe(pTopic, qos);
@@ -100,12 +100,12 @@ public class MqttClient extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Log.w(TAG, "Subscribe success");
+                    Log.w(TAG, "Mqtt Subscribed to " + pTopic);
                 }
 
                 @Override
                 public void onFailure(IMqttToken asyncActionToken, Throwable exception) {
-                    Log.w(TAG, "Subscribe failure");
+                    Log.w(TAG, "Mqtt Subscribe failure to " + pTopic);
                 }
             });
         } catch (MqttException e) {

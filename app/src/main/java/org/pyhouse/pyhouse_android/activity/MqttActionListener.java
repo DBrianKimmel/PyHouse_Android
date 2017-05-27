@@ -27,13 +27,13 @@ import java.util.ArrayList;
  * {@link MqttAndroidClient} and updating the {@link MqttConnection} associated with
  * the action
  */
-public class ActionListener implements IMqttActionListener {
+public class MqttActionListener implements IMqttActionListener {
 
-    private static final String TAG = "ActionListener";
+    private static final String TAG = "MqttActionListener";
     private static final String activityClass = "org.pyhouse.pyhouse_android.activity.MainActivity";
 
     /**
-     * Actions that can be performed Asynchronously <strong>and</strong> associated with a {@link ActionListener} object
+     * Actions that can be performed Asynchronously <strong>and</strong> associated with a {@link MqttActionListener} object
      */
     public enum Action {
         CONNECT,
@@ -44,7 +44,7 @@ public class ActionListener implements IMqttActionListener {
 
     /**
      * The {@link Action} that is associated with this instance of
-     * <code>ActionListener</code>
+     * <code>MqttActionListener</code>
      **/
     private final Action action;
     /**
@@ -70,7 +70,7 @@ public class ActionListener implements IMqttActionListener {
      * @param mqttConnection     The mqttConnection
      * @param additionalArgs Used for as arguments for string formating
      */
-    public ActionListener(Context context, Action action, MqttConnection mqttConnection, String... additionalArgs) {
+    public MqttActionListener(Context context, Action action, MqttConnection mqttConnection, String... additionalArgs) {
         this.context = context;
         this.action = action;
         this.mqttConnection = mqttConnection;

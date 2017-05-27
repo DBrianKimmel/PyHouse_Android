@@ -17,20 +17,12 @@ public class ActivityConstants {
     public static final String LOGGING_KEY = "LOGGING_ENABLED";
 
   /*Default values **/
-
-    /** Default QOS value*/
     static final int defaultQos = 0;
-    /** Default timeout*/
     static final int defaultTimeOut = 1000;
-    /** Default keep alive value*/
     static final int defaultKeepAlive = 10;
-    /** Default SSL enabled flag*/
     static final boolean defaultSsl = false;
-    /** Default message retained flag */
     static final boolean defaultRetained = false;
-    /** Default last will message*/
     static final MqttMessage defaultLastWill = null;
-    /** Default port*/
     static final int defaultPort = 1883;
 
     /** Connect Request Code */

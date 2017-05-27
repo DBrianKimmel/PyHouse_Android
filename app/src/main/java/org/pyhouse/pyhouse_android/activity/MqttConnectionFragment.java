@@ -55,7 +55,7 @@ public class MqttConnectionFragment extends Fragment {
         mTabHost = (FragmentTabHost) rootView.findViewById(android.R.id.tabhost);
         mTabHost.setup(getActivity(), getChildFragmentManager(), android.R.id.tabcontent);
         // Add a tab to the tabHost
-        mTabHost.addTab(mTabHost.newTabSpec("History").setIndicator("History"), HistoryFragment.class, bundle);
+        mTabHost.addTab(mTabHost.newTabSpec("History").setIndicator("History"), MqttHistoryFragment.class, bundle);
         mTabHost.addTab(mTabHost.newTabSpec("Publish").setIndicator("Publish"), MqttPublishFragment.class, bundle);
         mTabHost.addTab(mTabHost.newTabSpec("Subscribe").setIndicator("Subscribe"), MqttSubscriptionFragment.class, bundle);
         return rootView;

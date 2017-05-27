@@ -22,12 +22,12 @@ import java.util.ArrayList;
 import java.util.Map;
 
 
-public class HistoryFragment extends Fragment {
+public class MqttHistoryFragment extends Fragment {
 
     private MessageListItemAdapter messageListAdapter;
     private ArrayList<MqttReceivedMessageData> messages;
 
-    public HistoryFragment() {
+    public MqttHistoryFragment() {
         setHasOptionsMenu(true);
     }
 

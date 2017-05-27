@@ -3,7 +3,6 @@
  */
 package org.pyhouse.pyhouse_android.activity;
 
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -47,17 +46,12 @@ public class HelpFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.fragment_help, container, false);
-
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(rootView.getContext());
-
-
         Button websiteButton = (Button) rootView.findViewById(R.id.websiteButton);
         websiteButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "Opening Web Browser to Paho Website");
@@ -68,6 +62,7 @@ public class HelpFragment extends Fragment {
 
         Button feedbackButton = (Button) rootView.findViewById(R.id.feedbackButton);
         feedbackButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
                 Log.i(TAG, "Preparing Feedback Email.");
@@ -79,6 +74,7 @@ public class HelpFragment extends Fragment {
 
         Switch enableLoggingSwitch = (Switch) rootView.findViewById(R.id.enable_logging_switch);
         enableLoggingSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(rootView.getContext())
@@ -96,27 +92,22 @@ public class HelpFragment extends Fragment {
                 }
             }
         });
-
-
         // Inflate the layout for this fragment
         return rootView;
     }
 
-
     private String getDebugInfoForEmail() {
         StringBuilder sb = new StringBuilder();
-
         try {
             PackageInfo pInfo = getActivity().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0);
             sb.append(FEEDBACK_VERSION + pInfo.versionName + FEEDBACK_NEW_LINE);
         } catch (PackageManager.NameNotFoundException ex) {
             sb.append(FEEDBACK_VERSION + FEEDBACK_UNKNOWN + FEEDBACK_NEW_LINE);
         }
-
         sb.append(FEEDBACK_PHONE_MODEL + Build.MANUFACTURER + " " + Build.MODEL + FEEDBACK_NEW_LINE);
         sb.append(FEEDBACK_ANDROID_VERSION + Build.VERSION.SDK_INT);
-
-
         return sb.toString();
     }
 }
+
+// ### END DBK

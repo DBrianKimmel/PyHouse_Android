@@ -29,3 +29,5 @@
         android:text="@string/home_no_cons_message" />
 
 </RelativeLayout>
+
+<!-- ### END DBK -->

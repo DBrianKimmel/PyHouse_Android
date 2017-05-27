@@ -23,5 +23,6 @@ public class MqttPersistenceException extends Exception {
 
     /** Serialisation ID**/
     private static final long serialVersionUID = 5326458803268855071L;
-
 }
+
+// ### END DBK

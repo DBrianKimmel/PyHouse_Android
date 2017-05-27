@@ -31,54 +31,21 @@ import java.util.Map;
  * Represents a {@link MqttAndroidClient} and the actions it has performed
  */
 public class MqttConnection {
-
+    private static final String TAG = "MqttConnection       :";
     private static final String activityClass = "org.pyhouse.pyhouse_android.application.MainActivity";
     private String clientHandle = null;
     private String clientId = null;
     private String host = null;
     private int port = 0;
     private ConnectionStatus status = ConnectionStatus.NONE;
-
-    /**
-     * Te history of the {@link MqttAndroidClient} represented by this <code>MqttConnection</code> object
-     **/
-    private ArrayList<String> history = null;
-
-    /**
-     * The {@link MqttAndroidClient} instance this class represents
-     **/
-    private MqttAndroidClient client = null;
-
-    /**
-     * Collection of {@link java.beans.PropertyChangeListener}
-     **/
-    private final ArrayList<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();
-
-    /**
-     * The {@link Context} of the application this object is part of
-     **/
-    private Context context = null;
-
-    /**
-     * The {@link MqttConnectOptions} that were used to connect this client
-     **/
-    private MqttConnectOptions mqttConnectOptions;
-
-    /**
-     * True if this connection is secured using TLS
-     **/
-    private boolean tlsConnection = true;
-
-    /**
-     * MqttPersistence id, used by {@link MqttPersistence}
-     **/
-    private long persistenceId = -1;
-
-
-    /**
-     * The list of this connection's subscriptions
-     **/
-    private final Map<String, MqttSubscriptionModel> subscriptions = new HashMap<String, MqttSubscriptionModel>();
+    private ArrayList<String> history = null;  // The history of the MqttAndroidClient represented by this MqttConnection object
+    private MqttAndroidClient client = null;  // The MqttAndroidClient instance this class represents
+    private final ArrayList<PropertyChangeListener> listeners = new ArrayList<PropertyChangeListener>();  // Collection of java.beans.PropertyChangeListener
+    private Context context = null;  // The {@link Context} of the application this object is part of
+    private MqttConnectOptions mqttConnectOptions;  // The MqttConnectOptions that were used to connect this client
+    private boolean tlsConnection = true;  // True if this connection is secured using TLS
+    private long persistenceId = -1;  // MqttPersistence id, used by MqttPersistence
+    private final Map<String, MqttSubscriptionModel> subscriptions = new HashMap<String, MqttSubscriptionModel>();  // The list of this connection's subscriptions
     private final ArrayList<MqttReceivedMessageData> messageHistory = new ArrayList<MqttReceivedMessageData>();
     private final ArrayList<IMqttReceivedMessageListener> receivedMessageListeners = new ArrayList<IMqttReceivedMessageListener>();
 
@@ -131,8 +98,9 @@ public class MqttConnection {
 
     }
 
-
     /**
+     * Constructor
+     *
      * Creates a connection object with the server information and the client
      * hand which is the reference used to pass the client around activities
      *
@@ -363,23 +331,17 @@ public class MqttConnection {
         persistenceId = id;
     }
 
-    /**
-     * Returns the persistence ID assigned to this object
-     *
-     * @return the persistence ID assigned to this object
-     */
     public long persistenceId() {
         return persistenceId;
     }
-
 
     public void addNewSubscription(MqttSubscriptionModel mqttSubscriptionModel) throws MqttException {
         if (!subscriptions.containsKey(mqttSubscriptionModel.getTopic())) {
             try {
                 String[] actionArgs = new String[1];
                 actionArgs[0] = mqttSubscriptionModel.getTopic();
-                final ActionListener callback = new ActionListener(this.context,
-                        ActionListener.Action.SUBSCRIBE, this, actionArgs);
+                final MqttActionListener callback = new MqttActionListener(this.context,
+                        MqttActionListener.Action.SUBSCRIBE, this, actionArgs);
                 this.getClient().subscribe(mqttSubscriptionModel.getTopic(), mqttSubscriptionModel.getQos(), null, callback);
                 MqttPersistence mqttPersistence = new MqttPersistence(context);
 
