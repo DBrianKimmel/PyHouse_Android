@@ -1,10 +1,10 @@
+package org.pyhouse.pyhouse_android.model;
 /*
  * Created by briank on 5/21/17.
  */
-package org.pyhouse.pyhouse_android.model;
-
 
 public class MqttSubscriptionModel {
+
     private String topic;
     private int qos;
     private String lastMessage;

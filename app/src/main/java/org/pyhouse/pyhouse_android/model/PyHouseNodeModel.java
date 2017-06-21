@@ -7,5 +7,5 @@ package org.pyhouse.pyhouse_android.model;
  * Information about all the pyhouse servers found.
  */
 
-public class PyHouseServer {
+public class PyHouseNodeModel {
 }

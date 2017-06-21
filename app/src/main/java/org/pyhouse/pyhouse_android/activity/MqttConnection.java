@@ -31,6 +31,7 @@ import java.util.Map;
  * Represents a {@link MqttAndroidClient} and the actions it has performed
  */
 public class MqttConnection {
+
     private static final String TAG = "MqttConnection       :";
     private static final String activityClass = "org.pyhouse.pyhouse_android.application.MainActivity";
     private String clientHandle = null;

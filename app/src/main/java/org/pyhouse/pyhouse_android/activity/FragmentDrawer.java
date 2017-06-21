@@ -1,8 +1,8 @@
+package org.pyhouse.pyhouse_android.activity;
 /*
  * Created by briank on 5/21/17.
  *
  */
-package org.pyhouse.pyhouse_android.activity;
 
 import android.content.Context;
 import android.os.Bundle;

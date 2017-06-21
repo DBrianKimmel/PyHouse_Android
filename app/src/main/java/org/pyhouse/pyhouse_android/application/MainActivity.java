@@ -27,18 +27,16 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.TextView;
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import org.pyhouse.pyhouse_android.R;
+import org.pyhouse.pyhouse_android.activity.FragmentDrawer;
 import org.pyhouse.pyhouse_android.activity.MqttActionListener;
 import org.pyhouse.pyhouse_android.activity.ActivityConstants;
 import org.pyhouse.pyhouse_android.activity.MqttConnection;
 import org.pyhouse.pyhouse_android.activity.MqttConnectionFragment;
-import org.pyhouse.pyhouse_android.activity.FragmentDrawer;
 import org.pyhouse.pyhouse_android.activity.HomeFragment;
 import org.pyhouse.pyhouse_android.activity.MqttTraceCallback;
 import org.pyhouse.pyhouse_android.internal.MqttConnectionCollection;
@@ -52,24 +50,26 @@ import java.util.Map;
 import okhttp3.OkHttpClient;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-        // implements FragmentDrawer.FragmentDrawerListener {
+        implements
+                NavigationView.OnNavigationItemSelectedListener {
+                // FragmentDrawer.FragmentDrawerListener
+
     private static final String TAG = "MainActivity         :";
     //private final ChangeListener changeListener = new ChangeListener();
-    private FragmentDrawer drawerFragment;
-    private final MainActivity mainActivity = this;
-    private ArrayList<String> connectionMap;
+    private FragmentDrawer mDrawerFragment;
+    private final MainActivity mMainActivity = this;
+    private ArrayList<String> mMqttConnectionMap;
     static final String LOGIN_INTENT = "org.pyhouse.pyhouse_android.app.myapp.LoginActivity_2";
     public static final String EXTRA_MESSAGE = "org.pyhouse.pyhouse_android.MESSAGE";
-    private Button start;
-    private TextView output;
-    private OkHttpClient client;
+    //private Button start;
+    //private TextView output;
+    private OkHttpClient mClient;
 
     /*
      * We just created the main UI Thread
      *
-     * Create MQTT client
-     * Create Websocket client
+     * Create MQTT mClient
+     * Create Websocket mClient
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,14 +100,14 @@ public class MainActivity extends AppCompatActivity
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        //drawerFragment = (FragmentDrawer) getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
-        //drawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
-        //drawerFragment.setDrawerListener(this);
+        //mDrawerFragment = (FragmentDrawer) getSupportFragmentManager().findFragmentById(R.id.fragment_navigation_drawer);
+        //mDrawerFragment.setUp(R.id.fragment_navigation_drawer, (DrawerLayout) findViewById(R.id.drawer_layout), mToolbar);
+        //mDrawerFragment.setDrawerListener(this);
 
         // Fire up MQTT
         Context context = this.getApplicationContext();
         new MqttClient(context);
-        client = new OkHttpClient();
+        mClient = new OkHttpClient();
     }
 
     @Override
@@ -159,29 +159,29 @@ public class MainActivity extends AppCompatActivity
 
 
     public void removeConnectionRow(MqttConnection mqttConnection){
-        drawerFragment.removeConnection(mqttConnection);
+        mDrawerFragment.removeConnection(mqttConnection);
         populateConnectionList();
     }
 
     private void populateConnectionList(){
-        // Clear drawerFragment
-        drawerFragment.clearConnections();
+        // Clear mDrawerFragment
+        mDrawerFragment.clearConnections();
 
         // get all the available connections
         Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(this)
                 .getConnections();
         int connectionIndex = 0;
-        connectionMap = new ArrayList<String>();
+        mMqttConnectionMap = new ArrayList<String>();
 
         Iterator connectionIterator = connections.entrySet().iterator();
         while (connectionIterator.hasNext()){
             Map.Entry pair = (Map.Entry) connectionIterator.next();
-            drawerFragment.addConnection((MqttConnection) pair.getValue());
-            connectionMap.add((String) pair.getKey());
+            mDrawerFragment.addConnection((MqttConnection) pair.getValue());
+            mMqttConnectionMap.add((String) pair.getKey());
             ++connectionIndex;
         }
 
-        if(connectionMap.size() == 0){
+        if(mMqttConnectionMap.size() == 0){
             displayView(-1);
         } else {
             displayView(0);
@@ -194,11 +194,11 @@ public class MainActivity extends AppCompatActivity
         } else {
             Fragment fragment  = new MqttConnectionFragment();
             Bundle bundle = new Bundle();
-            bundle.putString(ActivityConstants.CONNECTION_KEY, connectionMap.get(position));
+            bundle.putString(ActivityConstants.CONNECTION_KEY, mMqttConnectionMap.get(position));
             fragment.setArguments(bundle);
             Map<String, MqttConnection> connections = MqttConnectionCollection.getInstance(this)
                     .getConnections();
-            MqttConnection mqttConnection = connections.get(connectionMap.get(position));
+            MqttConnection mqttConnection = connections.get(mMqttConnectionMap.get(position));
             String title = mqttConnection.getId();
             displayFragment(fragment, title);
         }
@@ -244,7 +244,7 @@ public class MainActivity extends AppCompatActivity
             MqttConnectOptions connOpts = optionsFromModel(model);
             mqttConnection.addConnectionOptions(connOpts);
             MqttConnectionCollection.getInstance(this).updateConnection(mqttConnection);
-            drawerFragment.updateConnection(mqttConnection);
+            mDrawerFragment.updateConnection(mqttConnection);
 
             mqttConnection.getClient().connect(connOpts, null, callback);
             Fragment fragment  = new MqttConnectionFragment();
@@ -286,8 +286,8 @@ public class MainActivity extends AppCompatActivity
 
         mqttConnection.addConnectionOptions(connOpts);
         MqttConnectionCollection.getInstance(this).addConnection(mqttConnection);
-        connectionMap.add(model.getClientHandle());
-        drawerFragment.addConnection(mqttConnection);
+        mMqttConnectionMap.add(model.getClientHandle());
+        mDrawerFragment.addConnection(mqttConnection);
 
         try {
             mqttConnection.getClient().connect(connOpts, null, callback);
